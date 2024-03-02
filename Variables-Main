@@ -1,0 +1,127 @@
+
+# Tasks:
+# List Variable Task:
+# Define a variable named server_names as a list in your variables.tf 
+# file with the following default values: "server1", "server2", "server3".
+
+# In main.tf, create a local_file resource named server_names_file that 
+# generates a file ( ${path.module} ) named server-names.txt. This file should list all server
+# names, each on a new line. 
+
+#### list string variable ####
+
+variable "server_names" {
+  description = "List of Servers"
+  default     = ["server1", "server2", "server3"]
+  type        = list(string)
+}
+
+
+#### resource - local_file - server_names ####
+
+resource "local_file" "server_names_file" {
+  filename = "${path.module}/server-names.txt"
+
+  content = <<-EOT
+          Just Text: ${var.server_names[0]}
+          Server name: ${var.server_names[1]}
+          Server name: ${var.server_names[2]}
+        
+          EOT
+
+}
+
+# Set Variable Task:
+# Define a variable named deployment_regions as a set in your variables.tf 
+# file with default values: "us-east-1", "eu-west-1", "ap-south-1".
+
+# Create a local_file resource named deployment_regions_file in main.tf 
+# that outputs these regions into a file named deployment-regions.txt, with 
+# each region on a new line. 
+
+#### set string variable ####
+variable "deployment_regions" {
+  description = "List of Regions"
+  default     = ["us-east-1", "eu-west-1", "ap-south-1"]
+  type        = set(string)
+}
+
+
+#### resource - local file - deployment region ####
+
+
+resource "local_file" "deployment_regions_file" {
+  filename = "${path.module}/deployment-regions.txt"
+  content  = join("\n", var.deployment_regions)
+}
+
+
+
+# Map Variable Task:
+# Define a variable named app_configuration as a map in variables.tf 
+# with the following key-value pairs: "environment" = "production", "debug_mode" = "false".
+
+# Use this variable to create a local_file resource named app_config_file in main.tf, 
+# generating a file named app-config.txt that details these settings.
+
+#### map string variable ####
+variable "app_configuration" {
+  description = "Configuration settings for the application."
+  type        = map(string)
+  default = {
+
+    "environment" = "production"
+    "debug_mode"  = "false"
+
+  }
+
+}
+
+#### Map Resource ####
+resource "local_file" "app_config_files" {
+
+  filename = "${path.module}/app-config.txt"
+  content  = <<-EOT
+      environment: ${var.app_configuration.environment}
+      debug_mode : ${var.app_configuration.debug_mode}
+
+  EOT
+
+}
+
+# Object Variable Task:
+# Define a variable named server_details as an object in variables.tf 
+# with attributes and default values: name = "webserver", ip = "192.168.1.10".
+
+# In main.tf, create a local_file resource named server_details_file that writes
+#  these details into a file named server-details.txt.
+
+##### Object Variable ####
+variable "server_config" {
+
+  description = "Configuration settings for a server."
+  type = object({
+    name = string
+    ip   = string
+
+  })
+
+  default = {
+    name = "webserver"
+    ip   = "192.168.1.10"
+
+  }
+
+}
+
+#### Map Resource ####
+resource "local_file" "server_details_file" {
+
+  filename = "${path.module}/server-details.txt"
+  content  = <<-EOT
+    name =  "${var.server_config.name}"
+    ip   =  "${var.server_config.ip}"
+
+    EOT
+
+}
